@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: sync fork
+
+# Controls when the workflow will run
+on:
+  repository_dispatch:
+    types:
+      - 'sync_fork'
+  # schedule:
+  #  - cron:  '* * * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "sync"
+  sync:
+    name: sync fork
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: set user.name and user.email
+        run: |
+          git config --global user.name ${{ secrets.USER_NAME }}
+          git config --global user.email ${{ secrets.USER_EMAIL }}
+          git config --global credential.helper store
+      - name: work
+        run: |
+          git clone https://${{ secrets.TOKEN }}@github.com/fang-yj/freenode_from_tolinkshare2.git tmp
+          cd tmp
+          git remote add upstream https://github.com/tolinkshare2/tolinkshare2.github.io.git
+          git fetch upstream
+          git merge upstream/main
+          git push origin main
+        # run: |
+        #   git config --global user.name "fang-yj"
+        #   git config --global user.email "fang-yj@qq.com"
+        #   git config --global credential.helper store
+        #   git clone https://github.com/abshare/abshare.github.io.git tmp
+        #   cd tmp
+        #   git remote add upstream https://${{ secrets.TOKEN }}@github.com/fang-yj/freenode.git
+        #   git fetch upstream
+        #   git merge upstream/main
+        #   git push origin main
